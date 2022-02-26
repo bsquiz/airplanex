@@ -1,0 +1,243 @@
+<html>
+	<head>
+<meta name="viewport" content="initial-scale=1.0">
+<link rel="stylesheet" href="../shared.css">
+	</head>
+	<body>
+		<div id="menu" class="text-center d-flex flex-column">
+			<div class="flex-full">
+
+				<img src="img/logo.png"/>
+				<p id="highScore"></p>
+
+				<div class="desktop-instructions">
+					<p>Move with arrow keys</p>
+					<p>Shoot with spacebar</p>
+				</div>
+
+				<div class="mobile-instructions">
+					<p>Move with direction buttons</p>
+				</div>
+
+				<p>Destroy enemies and collect coins</p>
+
+				<button id="playButton">play</button>
+			</div>
+		</div>
+
+
+		<div id="gameWrapper" class="d-none">
+					<div id="hud">
+			<div id="score">0</div>
+			<div id="lives"></div>
+		</div>
+		<canvas id="background"></canvas>
+		<canvas id="playArea"></canvas>
+		<canvas id="foreGround"></canvas>
+	</div>
+
+		<div id="directionButtons" class="d-grid">
+			<button id="rightButton" data-key="ArrowRight" class="direction-button">></button>
+			<button id="leftButton" data-key="ArrowLeft" class="direction-button"><</button>
+			<button id="upButton" data-key="ArrowUp" class="direction-button">^</button>
+			<button id="downButton" data-key="ArrowDown" class="direction-button">v</button>
+		</div>
+
+		<script type="text/javascript" src="../nav.js"></script>
+		<script type="text/javascript" src="js/Utils.js"></script>
+		<script type="text/javascript" src="js/ResourceLoader.js"></script>
+
+		<script type="text/javascript" src="js/objects/GameObject.js"></script>
+		<script type="text/javascript" src="js/objects/Bullet.js"></script>
+		<script type="text/javascript" src="js/objects/EnemyBullet.js"></script>
+		<script type="text/javascript" src="js/objects/Pickup.js"></script>
+		<script type="text/javascript" src="js/objects/Coin.js"></script>
+		<script type="text/javascript" src="js/objects/Explosion.js"></script>
+		<script type="text/javascript" src="js/objects/Enemy.js"></script>
+		<script type="text/javascript" src="js/objects/SaucerUpgraded.js"></script>
+		<script type="text/javascript" src="js/objects/Ship.js"></script>
+
+		<script type="text/javascript" src="js/background/Background.js"></script>
+		<script type="text/javascript" src="js/background/Island.js"></script>
+
+		<script type="text/javascript" src="js/Level.js"></script>
+		<script type="text/javascript" src="js/EnemyWave.js"></script>
+		<script type="text/javascript" src="js/AudioPlayer.js"></script>
+		<script type="text/javascript" src="js/Display.js"></script>
+		<script type="text/javascript" src="js/game.js"></script>
+		<script>
+
+			const $directionButtons = document.getElementsByClassName('direction-button');
+			const directionButtons = [...$directionButtons];
+
+			game.display.updateHighScore(game.getHighScore());
+
+			function checkGameLoaded() {
+				game.isLoaded = (game.imagesLoaded && game.audioLoaded);
+			}
+			document.addEventListener('keydown', e => {
+				e.preventDefault();
+				game.keysDown[e.code] = true;
+			});
+
+			document.addEventListener('keyup', e => {
+				game.keysDown[e.code] = false;
+			});
+
+			directionButtons.forEach(button => {
+				button.addEventListener('mousedown', e => {
+					const keyType = e.currentTarget.getAttribute('data-key');
+					game.keysDown[keyType] = true;
+				});
+				button.addEventListener('mouseup', e => {
+					const keyType = e.currentTarget.getAttribute('data-key');
+					game.keysDown[keyType] = false;
+				});
+			});
+
+			document.addEventListener('filesloaded-image', () => {
+				game.imagesLoaded = true;
+				checkGameLoaded();
+			});
+			document.addEventListener('filesloaded-audio', () => {
+				game.audioLoaded = true;
+				checkGameLoaded();
+			});
+			document.getElementById('playButton').addEventListener('click', () => {
+				document.getElementById('gameWrapper').classList.toggle('d-none');
+								document.getElementById('menu').classList.toggle('d-none');
+
+				game.reset();
+				game.start();
+			});
+			window.requestAnimationFrame(() => game.update());
+		</script>
+		<style>
+			body {
+				background: black;
+				color: white;
+				font-size: 1.5em;
+				text-transform: uppercase;
+			}
+			canvas {
+				position: absolute;
+				border: solid midnightblue;
+			}
+			#gameWrapper, #menu, #hud {
+				width: 350px;
+				margin: auto;
+			}
+			#background {
+				background: #0d47a1;
+			}
+			#menu {
+				height: 500px;
+				width: 350px;
+				background: black;
+				z-index: 100;
+				border: solid thick #673ab7;
+			}
+			#hud {
+				display: flex;
+			}
+			#lives {
+				background: url('img/life.png');
+				background-repeat: repeat-x;
+				background-size: 16px 16px;
+				width: 48px;
+				height: 16px;
+			}
+			#playButton {
+				width: 90%;
+				margin: 5%;
+				padding: 6px;
+				border: solid 1px #673ab7;
+				background: black;
+				color: white;
+			}
+			#gameWrapper {
+				height: 500px;
+			}
+
+			#directionButtons {
+				display: none;
+    margin-top: 16px;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+}
+#directionButtons #upButton {
+    grid-row: 1;
+    grid-column: 2;
+}
+#directionButtons #leftButton {
+    grid-row: 2;
+    grid-column: 1;
+}
+#directionButtons #downButton {
+    grid-row: 3;
+    grid-column: 2;
+}
+#directionButtons #rightButton {
+    grid-row: 2;
+    grid-column: 3;
+}
+
+#directionButtons button {
+    width: 100%;
+    height: 100px;
+}
+.mobile-instructions {
+	display: none;
+}
+			.d-grid {
+				display: grid;
+			}
+			.font-md {
+				font-size: 1.25em;
+			}
+			.font-lg {
+				font-size: 1.5em;
+			}
+			.text-center {
+				text-align: center;
+			}
+			.full-width {
+				width: 100%;
+			}
+			.flex-full {
+				flex-grow: 1;
+			}
+			.d-flex {
+				display: flex;
+			}
+			.flex-column {
+				flex-direction: column;
+			}
+			.d-block {
+				display: block;
+			}
+			.d-none {
+				display: none;
+			}
+			.p-absolute {
+				position: absolute;
+			}
+
+			button {
+				font-size: inherit;
+			}
+
+						@media (max-width: 900px) {
+				#directionButtons {
+					display: grid;
+				}
+				.mobile-instructions {
+					display: block;
+				}
+				.desktop-instructions {
+					display: none;
+				}
+			}
+		</style>
+	</body>
+</html>
