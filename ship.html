@@ -85,11 +85,13 @@
 			});
 
 			directionButtons.forEach(button => {
-				button.addEventListener('mousedown', e => {
+				button.addEventListener('pointerdown', e => {
+					e.preventDefault();
 					const keyType = e.currentTarget.getAttribute('data-key');
 					game.keysDown[keyType] = true;
 				});
-				button.addEventListener('mouseup', e => {
+				button.addEventListener('pointerup', e => {
+					e.preventDefault();
 					const keyType = e.currentTarget.getAttribute('data-key');
 					game.keysDown[keyType] = false;
 				});
