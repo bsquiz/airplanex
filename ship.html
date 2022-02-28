@@ -106,8 +106,8 @@
 				checkGameLoaded();
 			});
 			document.getElementById('playButton').addEventListener('click', () => {
-				document.getElementById('gameWrapper').classList.toggle('d-none');
-								document.getElementById('menu').classList.toggle('d-none');
+				document.getElementById('gameWrapper').classList.remove('d-none');
+				document.getElementById('menu').classList.add('d-none');
 
 				game.reset();
 				game.start();
