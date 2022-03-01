@@ -35,8 +35,10 @@ const game = {
 	isLoaded: false,
 	isDebug: false,
 	isMobile: false,
-
+	isMusicPlaying: true,
+	
 	gameOver() {
+		this.audio.pause(this.audio.Sound.BGM);
 		this.state = this.State.GAME_OVER;
 		this.saveHighScore(this.score);
 		this.display.updateHighScore(game.getHighScore());
@@ -170,7 +172,7 @@ const game = {
 					bullet.isActive = false;
 
 					if (enemy.takeDamage(1)) {
-						const pickupType = Math.floor(Math.random() * 100);
+						const pickupType = Math.floor(Math.random() * 50);
 						let pickup;
 
 						this.spawnGameObject(enemy.x, enemy.y, this.explosions);
@@ -220,13 +222,14 @@ const game = {
 				if (type === Utils.PickupType.COIN) {
 					this.score += pickup.points;
 					this.display.drawHUD(this.score);
+					this.audio.play(this.audio.Sound.COIN);
 				} else {
 					this.shieldPickup.reset();
 					this.ship.hasShield = true;
+					this.audio.play(this.audio.Sound.UPGRADE);
 				}
 
 				pickup.reset();
-				this.audio.play(this.audio.Sound.COIN);
 			}
 		});
 	},
@@ -335,8 +338,20 @@ const game = {
 	start() {
 		this.reset();
 		this.state = this.State.PLAYING;
+		this.audio.playBGM();
 	},
+	toggleMusic() {
+		let volume = 0.5;
 
+		if (this.isMusicPlaying) {
+			volume = 0;
+		}
+
+		this.audio.setVolume(this.audio.Sound.BGM, volume);
+		this.isMusicPlaying = !this.isMusicPlaying;
+
+		return this.isMusicPlaying;
+	},
 	advanceNextWave() {
 		this.enemyWaves[this.currentWave].reset();
 
